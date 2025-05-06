@@ -28,15 +28,17 @@ class ArticleController extends AbstractController {
 
             // Option 1  Utiliser les setters (à activer si tu choisis cette voie)
              // On récupère les données du formulaire, permet de créer un article, fonctions "SET", rempli les données de l'instance de la classe article
-             $article = new Article();
-             $article->setTitle($title);
-             $article->setDescription($description);
-             $article->setContent($content);
-             $article->setImage($image);
+             //$article = new Article();
+             //$article->setTitle($title);
+             //$article->setDescription($description);
+             //$article->setContent($content);
+             //$article->setImage($image);
+             //$article->setIsPublished(true);
+			//$article->setCreatedAt(new \DateTime());
 
 
              // Option 2 : constructeur dans Article qui prend ces arguments : encapsulation
-        //  $article = new Article($title, $description, $content, $image);
+         $article = new Article($title, $description, $content, $image);
 
            // On prépare l'objet pour l'enregistrer en BDD
            $entityManager->persist($article);
@@ -89,4 +91,36 @@ public function displayDeleteArticle($id, ArticleRepository $articleRepository, 
     return $this->redirectToRoute('list-articles');
 
 }
+#[Route(path: '/update-article/{id}', name: "update-article")]
+	public function displayUpdateArticle($id, ArticleRepository $articleRepository, Request $request, EntityManagerInterface $entityManager) {
+
+		$article = $articleRepository->find($id);
+
+		if ($request->isMethod("POST")) {
+
+			$title = $request->request->get('title');
+			$description = $request->request->get('description');
+			$content = $request->request->get('content');
+			$image = $request->request->get('image');
+						
+			// méthode 1 : mise à jour de l'article avec les fonctions set (setter)
+			//$article->setTitle($title);
+			//$article->setDescription($description);
+			//$article->setContent($content);
+			//$article->setImage($image);
+
+			// méthode : mise de l'article avec une méthode update (respecte l'encapsulation)
+			$article->update($title, $content, $description, $image);
+
+			$entityManager->persist($article);
+			$entityManager->flush();
+		
+		}
+
+		return $this->render('update-article.html.twig', [
+			'article' => $article
+		]);
+
+	}
+
 }

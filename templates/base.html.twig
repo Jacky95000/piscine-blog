@@ -19,6 +19,7 @@
 
 				<li><a href="{{ path('home') }}">Accueil</a></li>
 				<li><a href="{{ path('list-articles') }}">Liste des articles</a></li>
+				<li><a href="{{ path('create-article') }}">Créer un article</a></li>
 			</ul>
 
 
@@ -29,7 +30,7 @@
 
 <main class="main">
 
-{% for messagein app.flashes('success') %}
+{% for message in app.flashes('success') %}
 <div class="success-message">
 <p>{{message}}</p>
 </div>
