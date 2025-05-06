@@ -5,7 +5,6 @@ namespace App\Controller;
 use App\Entity\Category;
 use App\Form\CategoryForm;
 use App\Repository\CategoryRepository;
-use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -44,13 +43,35 @@ class CategoryController extends AbstractController {
         // et l'instance de category
         $categoryForm = $this->createForm(CategoryForm::class, $category);
 
+        $categoryForm->handleRequest($request);
         // je stocke la variable du formulaire qui est envoyées en POST
         if ($categoryForm->isSubmitted()) {
             // si oui, sauvegarde la category, propriétés ont été automatiquement remplies par symfony et le système de formulaire
+
+            $category->setCreatedAt(new \DateTimeImmutable());
+
             $entityManager->persist($category);
             $entityManager->flush();
         }
         return $this->render('create-category.html.twig', [
+            'categoryForm' => $categoryForm->createView()
+        ]);
+    }
+
+    #[Route('/update-category/{id}', name: 'update-category')]
+    public function displayUpdateCategory($id, CategoryRepository $categoryRepository, Request $request, EntityManagerInterface $entityManager) {
+
+        $category = $categoryRepository->find($id);
+
+        $categoryForm = $this->createForm(CategoryForm::class, $category);
+
+        $categoryForm->handleRequest($request);
+
+        if ($categoryForm->isSubmitted()) {
+            $entityManager->persist($category);
+            $entityManager->flush();
+        }
+        return $this->render('update-category.html.twig', [
             'categoryForm' => $categoryForm->createView()
         ]);
     }
